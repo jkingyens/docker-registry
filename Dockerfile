@@ -16,19 +16,22 @@ run apt-get -y upgrade
 run apt-get -y install python-pip
 
 # Install deps for backports.lzma (python2 requires it)
-run apt-get -y install python-dev liblzma-dev libevent1-dev
+run apt-get -y install python-dev liblzma-dev libevent1-dev libffi-dev libssl-dev
 
 add . /docker-registry
-add ./config/boto.cfg /etc/boto.cfg
 
 # Install core
 run pip install /docker-registry/depends/docker-registry-core
 
+# Install the GCS plugin
+run pip install /docker-registry/depends/docker-registry-driver-gcs
+
 # Install registry
 run pip install /docker-registry/
 
-env DOCKER_REGISTRY_CONFIG /docker-registry/config/config_sample.yml
-env SETTINGS_FLAVOR dev
+env BOTO_CONFIG /conf/boto.cfg
+env DOCKER_REGISTRY_CONFIG /conf/config.yml
+env SETTINGS_FLAVOR prod
 
 expose 5000
 

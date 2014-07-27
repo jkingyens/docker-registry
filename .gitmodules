@@ -1,0 +1,3 @@
+[submodule "depends/docker-registry-driver-gcs"]
+	path = depends/docker-registry-driver-gcs
+	url = https://github.com/jkingyens/docker-registry-driver-gcs
