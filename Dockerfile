@@ -17,13 +17,17 @@ RUN apt-get update \
         python-dev \
         liblzma-dev \
         libevent1-dev \
+        libffi-dev \
+        libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
 COPY . /docker-registry
-COPY ./config/boto.cfg /etc/boto.cfg
 
 # Install core
 RUN pip install /docker-registry/depends/docker-registry-core
+
+# Install the GCS plugin
+RUN pip install /docker-registry/depends/docker-registry-driver-gcs
 
 # Install registry
 RUN pip install file:///docker-registry#egg=docker-registry[bugsnag,newrelic,cors]
@@ -32,8 +36,9 @@ RUN patch \
  $(python -c 'import boto; import os; print os.path.dirname(boto.__file__)')/connection.py \
  < /docker-registry/contrib/boto_header_patch.diff
 
-ENV DOCKER_REGISTRY_CONFIG /docker-registry/config/config_sample.yml
-ENV SETTINGS_FLAVOR dev
+ENV BOTO_CONFIG /conf/boto.cfg
+ENV DOCKER_REGISTRY_CONFIG /conf/config.yml
+ENV SETTINGS_FLAVOR prod
 
 EXPOSE 5000
 
